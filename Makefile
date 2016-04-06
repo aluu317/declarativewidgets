@@ -149,7 +149,7 @@ dist/urth/widgets/ext/notebook/bower.json: bower.json
 	@mkdir -p dist/urth/widgets/ext/notebook
 	@cp bower.json dist/urth/widgets/ext/notebook/bower.json
 
-dist/docs: dist/docs/bower_components dist/docs/site dist/docs/site/generated_docs.json
+dist/docs: dist/docs/bower_components dist/docs/site dist/docs/site/generated_docs.json copydist/docs/site
 
 dist/docs/bower_components: node_modules etc/docs/bower.json
 	@echo 'Installing documentation dependencies'
@@ -165,6 +165,11 @@ dist/docs/site: node_modules ${shell find etc/docs/site}
 	@npm run polybuild -- --maximum-crush dist/docs/site/docs.html
 	@mv dist/docs/site/docs.build.html dist/docs/site/docs.html
 
+copydist/docs/site:
+	@echo 'Copying dist/docs/site'
+	@mkdir -p dist/urth/widgets/ext/notebook/docs
+	@cp -R dist/docs/site/* dist/urth/widgets/ext/notebook/docs/.
+
 dist/docs/site/generated_docs.json: dist/docs/site bower_components ${shell find elements/**/*.html} etc/docs/hydrolyze_elements.js etc/docs/urth-elements.html | $(URTH_COMP_LINKS)
 	@echo 'Running hydrolysis to generate doc json'
 	@node etc/docs/hydrolyze_elements.js 'etc/docs/urth-elements.html' 'dist/docs/site/generated_docs.json'
@@ -178,7 +183,7 @@ dist/VERSION:
 	@mkdir -p dist
 	@echo "$(COMMIT)" > dist/VERSION
 
-dist: dist/urth dist/urth/widgets/ext/notebook/urth-widgets.jar dist/scripts dist/VERSION
+dist: dist/urth dist/urth/widgets/ext/notebook/urth-widgets.jar dist/scripts dist/VERSION dist/docs
 
 sdist: dist
 	@cp -R MANIFEST.in dist/.
